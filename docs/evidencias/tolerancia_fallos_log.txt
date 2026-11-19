@@ -1,0 +1,32 @@
+[t+   0.1s] F1: caída de inventory-1 durante 1500 lecturas del catálogo
+[t+   0.7s] $ stack.sh stop inventory-1
+[t+   3.7s] ==> F1: SUPERADA
+[t+   4.2s] $ stack.sh start inventory-1
+[t+   9.7s] F2: caída de inventory-2 durante 200 pedidos
+[t+  10.3s] $ stack.sh stop inventory-2
+[t+  11.0s] ==> F2: SUPERADA
+[t+  11.5s] $ stack.sh start inventory-2
+[t+  17.0s] F3: caída de TODAS las réplicas de inventory
+[t+  17.1s] $ stack.sh stop inventory-1 inventory-2
+[t+  17.8s]    estados circuit breaker (orders->inventory): ['OPEN', 'OPEN']; GET catálogo -> 503
+[t+  18.7s] $ stack.sh start inventory-1 inventory-2
+[t+  24.2s] ==> F3: SUPERADA
+[t+  24.2s] F4: caída de notifications mientras se crean 30 pedidos
+[t+  24.4s] $ stack.sh stop notifications
+[t+  26.1s]    pedidos durante la caída: {'201': 30}; consumer group: ['entries-read', '8569', 'lag', '31']
+[t+  26.5s] $ stack.sh start notifications
+[t+  27.0s] ==> F4: SUPERADA
+[t+  27.0s] F5: caída del broker Redis mientras se crean 20 pedidos
+[t+  27.2s] $ redis-cli SHUTDOWN (broker caído)
+[t+  28.8s]    pedidos con broker caído: {'201': 20}; eventos retenidos en outbox: 20
+[t+  28.8s] $ redis-server (broker restablecido)
+[t+  30.3s] ==> F5: SUPERADA
+[t+  30.3s] F6: consumidor 'fantasma' lee 10 eventos y muere sin XACK
+[t+  30.5s] $ stack.sh stop notifications
+[t+  32.1s]    el consumidor fantasma tomó 10 mensajes y 'murió' sin confirmarlos
+[t+  32.5s] $ stack.sh start notifications
+[t+  50.8s] ==> F6: SUPERADA
+[t+  50.8s] F7: caída de orders (degradación parcial)
+[t+  51.0s] $ stack.sh stop orders
+[t+  51.9s] $ stack.sh start orders
+[t+  57.5s] ==> F7: SUPERADA

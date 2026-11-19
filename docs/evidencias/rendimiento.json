@@ -1,0 +1,102 @@
+{
+  "configuracion": "2 réplicas de inventory",
+  "fecha": "2026-11-18 22:04",
+  "resultados": [
+    {
+      "escenario": "GET /api/products (catálogo)",
+      "concurrencia": 10,
+      "duracion_s": 15.0,
+      "peticiones": 6556,
+      "throughput_rps": 437.2,
+      "exito_pct": 100.0,
+      "lat_media_ms": 22.9,
+      "p50_ms": 22.3,
+      "p95_ms": 32.8,
+      "p99_ms": 40.0,
+      "max_ms": 63.9,
+      "codigos": {
+        "200": 6556
+      }
+    },
+    {
+      "escenario": "GET /api/products (catálogo)",
+      "concurrencia": 50,
+      "duracion_s": 15.09,
+      "peticiones": 4421,
+      "throughput_rps": 293.0,
+      "exito_pct": 100.0,
+      "lat_media_ms": 170.2,
+      "p50_ms": 141.9,
+      "p95_ms": 406.3,
+      "p99_ms": 698.5,
+      "max_ms": 1655.8,
+      "codigos": {
+        "200": 4421
+      }
+    },
+    {
+      "escenario": "GET /api/products (catálogo)",
+      "concurrencia": 100,
+      "duracion_s": 15.6,
+      "peticiones": 2206,
+      "throughput_rps": 141.4,
+      "exito_pct": 100.0,
+      "lat_media_ms": 694.1,
+      "p50_ms": 442.3,
+      "p95_ms": 2071.9,
+      "p99_ms": 3061.5,
+      "max_ms": 4745.7,
+      "codigos": {
+        "200": 2206
+      }
+    },
+    {
+      "escenario": "POST /api/orders (crear pedido)",
+      "concurrencia": 10,
+      "duracion_s": 15.06,
+      "peticiones": 2945,
+      "throughput_rps": 195.6,
+      "exito_pct": 100.0,
+      "lat_media_ms": 51.1,
+      "p50_ms": 50.0,
+      "p95_ms": 72.8,
+      "p99_ms": 85.9,
+      "max_ms": 119.9,
+      "codigos": {
+        "201": 2945
+      }
+    },
+    {
+      "escenario": "POST /api/orders (crear pedido)",
+      "concurrencia": 25,
+      "duracion_s": 15.06,
+      "peticiones": 2731,
+      "throughput_rps": 181.4,
+      "exito_pct": 100.0,
+      "lat_media_ms": 137.7,
+      "p50_ms": 129.0,
+      "p95_ms": 222.2,
+      "p99_ms": 267.6,
+      "max_ms": 389.7,
+      "codigos": {
+        "201": 2731
+      }
+    },
+    {
+      "escenario": "POST /api/orders (crear pedido)",
+      "concurrencia": 50,
+      "duracion_s": 15.26,
+      "peticiones": 2255,
+      "throughput_rps": 147.7,
+      "exito_pct": 100.0,
+      "lat_media_ms": 335.7,
+      "p50_ms": 285.4,
+      "p95_ms": 680.2,
+      "p99_ms": 935.8,
+      "max_ms": 1473.7,
+      "codigos": {
+        "201": 2255
+      }
+    }
+  ]
+}

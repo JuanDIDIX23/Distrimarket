@@ -1,0 +1,119 @@
+# DistriMarket — despliegue completo con Docker Compose
+#   docker compose up -d --build        (levantar)
+#   docker compose ps                   (estado)
+#   docker compose stop inventory-1     (simular caída de una réplica)
+name: distrimarket
+
+x-service: &service
+  build: { context: . }
+  restart: unless-stopped            # recuperación automática ante caídas del proceso
+  networks: [backend]
+  environment: &common-env
+    REDIS_URL: redis://redis:6379/0
+    JWT_SECRET: ${JWT_SECRET:?defina JWT_SECRET en .env}
+    INTERNAL_TOKEN: ${INTERNAL_TOKEN:?defina INTERNAL_TOKEN en .env}
+    JWT_TTL_MINUTES: ${JWT_TTL_MINUTES:-60}
+  depends_on:
+    postgres: { condition: service_healthy }
+    redis: { condition: service_healthy }
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: postgres
+    command: ["postgres", "-c", "max_connections=300"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dm}"]
+      interval: 5s
+      retries: 10
+    networks: [backend]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+    networks: [backend]
+
+  auth:
+    <<: *service
+    build: { context: ., args: { SERVICE: auth } }
+    environment:
+      <<: *common-env
+      SERVICE_NAME: auth
+      INSTANCE_ID: auth
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dm}:${POSTGRES_PASSWORD}@postgres:5432/auth_db
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@distrimarket.co}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?defina ADMIN_PASSWORD en .env}
+
+  inventory-1: &inventory
+    <<: *service
+    build: { context: ., args: { SERVICE: inventory } }
+    environment:
+      <<: *common-env
+      SERVICE_NAME: inventory
+      INSTANCE_ID: inventory-1
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dm}:${POSTGRES_PASSWORD}@postgres:5432/inventory_db
+
+  inventory-2:
+    <<: *inventory
+    environment:
+      <<: *common-env
+      SERVICE_NAME: inventory
+      INSTANCE_ID: inventory-2
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dm}:${POSTGRES_PASSWORD}@postgres:5432/inventory_db
+
+  orders:
+    <<: *service
+    build: { context: ., args: { SERVICE: orders } }
+    environment:
+      <<: *common-env
+      SERVICE_NAME: orders
+      INSTANCE_ID: orders
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dm}:${POSTGRES_PASSWORD}@postgres:5432/orders_db
+      INVENTORY_URLS: http://inventory-1:8000,http://inventory-2:8000
+
+  notifications:
+    <<: *service
+    build: { context: ., args: { SERVICE: notifications } }
+    environment:
+      <<: *common-env
+      SERVICE_NAME: notifications
+      INSTANCE_ID: notifications
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dm}:${POSTGRES_PASSWORD}@postgres:5432/notifications_db
+
+  gateway:
+    <<: *service
+    build: { context: ., args: { SERVICE: gateway } }
+    ports: ["${GATEWAY_PORT:-8000}:8000"]   # ÚNICO puerto expuesto al exterior
+    networks: [backend]
+    environment:
+      <<: *common-env
+      SERVICE_NAME: gateway
+      INSTANCE_ID: gateway
+      AUTH_URLS: http://auth:8000
+      INVENTORY_URLS: http://inventory-1:8000,http://inventory-2:8000
+      ORDERS_URLS: http://orders:8000
+      NOTIFICATIONS_URLS: http://notifications:8000
+      RATE_LIMIT_PER_MIN: ${RATE_LIMIT_PER_MIN:-600}
+      LOGIN_RATE_LIMIT_PER_MIN: ${LOGIN_RATE_LIMIT_PER_MIN:-10}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8000}
+    depends_on: [auth, inventory-1, inventory-2, orders, notifications]
+
+networks:
+  backend: {}
+
+volumes:
+  pgdata: {}
+  redisdata: {}

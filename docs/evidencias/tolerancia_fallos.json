@@ -1,0 +1,228 @@
+[
+  {
+    "id": "F1",
+    "escenario": "Caída de una réplica de inventory (lecturas)",
+    "esperado": "0 errores visibles para el cliente; failover automático a inventory-2",
+    "observado": {
+      "total": 1500,
+      "codigos": {
+        "200": 1500
+      },
+      "lat_p50_ms": 22.6,
+      "lat_max_ms": 72.7,
+      "replicas_en_ultimas_100": [
+        "inventory-2"
+      ]
+    },
+    "resultado": "SUPERADA"
+  },
+  {
+    "id": "F2",
+    "escenario": "Caída de una réplica de inventory (escrituras)",
+    "esperado": "200 pedidos confirmados; stock descontado = pedidos registrados (consistencia)",
+    "observado": {
+      "total": 200,
+      "codigos": {
+        "201": 200
+      },
+      "lat_p50_ms": 27.1,
+      "lat_max_ms": 58.5,
+      "pedidos_registrados": 200,
+      "stock_descontado": 200
+    },
+    "resultado": "SUPERADA"
+  },
+  {
+    "id": "F3",
+    "escenario": "Caída total de inventory + circuit breaker",
+    "esperado": "Respuestas 503 controladas; el circuito se abre y las siguientes fallan rápido (<50 ms); al volver el servicio el circuito pasa a HALF_OPEN y luego CLOSED",
+    "observado": {
+      "linea_de_tiempo": [
+        {
+          "intento": 1,
+          "status": 503,
+          "ms": 159.3,
+          "detalle": "Inventario no disponible. Intente más tarde."
+        },
+        {
+          "intento": 2,
+          "status": 503,
+          "ms": 156.7,
+          "detalle": "Inventario no disponible. Intente más tarde."
+        },
+        {
+          "intento": 3,
+          "status": 503,
+          "ms": 5.1,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 4,
+          "status": 503,
+          "ms": 4.3,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 5,
+          "status": 503,
+          "ms": 4.1,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 6,
+          "status": 503,
+          "ms": 3.9,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 7,
+          "status": 503,
+          "ms": 4.0,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 8,
+          "status": 503,
+          "ms": 4.1,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 9,
+          "status": 503,
+          "ms": 4.1,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 10,
+          "status": 503,
+          "ms": 4.7,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 11,
+          "status": 503,
+          "ms": 4.1,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        },
+        {
+          "intento": 12,
+          "status": 503,
+          "ms": 4.0,
+          "detalle": "Inventario temporalmente no disponible (circuito abierto). Intente más"
+        }
+      ],
+      "catalogo_durante_caida": 503,
+      "estado_breakers_durante_caida": [
+        "OPEN",
+        "OPEN"
+      ],
+      "pedido_tras_recuperacion": {
+        "status": 201,
+        "ms": 15.8
+      },
+      "estado_breakers_tras_recuperacion": [
+        "CLOSED",
+        "OPEN"
+      ],
+      "transiciones": [
+        [
+          [
+            1795057621.178,
+            "CLOSED",
+            "OPEN"
+          ],
+          [
+            1795057628.072,
+            "OPEN",
+            "HALF_OPEN"
+          ],
+          [
+            1795057628.08,
+            "HALF_OPEN",
+            "CLOSED"
+          ]
+        ],
+        [
+          [
+            1795057614.15,
+            "CLOSED",
+            "OPEN"
+          ],
+          [
+            1795057621.02,
+            "OPEN",
+            "HALF_OPEN"
+          ],
+          [
+            1795057621.021,
+            "HALF_OPEN",
+            "OPEN"
+          ]
+        ]
+      ]
+    },
+    "resultado": "SUPERADA"
+  },
+  {
+    "id": "F4",
+    "escenario": "Caída del servicio de notificaciones",
+    "esperado": "Los pedidos NO se ven afectados; al volver se entregan las 30 notificaciones sin pérdidas ni duplicados",
+    "observado": {
+      "total": 30,
+      "codigos": {
+        "201": 30
+      },
+      "lat_p50_ms": 24.0,
+      "lat_max_ms": 37.0,
+      "notificaciones_durante_caida": 0,
+      "notificaciones_tras_recuperar": 30,
+      "segundos_hasta_ponerse_al_dia": 0.5
+    },
+    "resultado": "SUPERADA"
+  },
+  {
+    "id": "F5",
+    "escenario": "Caída del broker de mensajería (Redis)",
+    "esperado": "Los pedidos se siguen confirmando (outbox); al volver Redis se publican y notifican los 20 eventos",
+    "observado": {
+      "total": 20,
+      "codigos": {
+        "201": 20
+      },
+      "lat_p50_ms": 25.8,
+      "lat_max_ms": 35.6,
+      "outbox_pendiente_durante_caida": 20,
+      "outbox_pendiente_despues": 0,
+      "notificaciones_entregadas": 20,
+      "segundos_hasta_entrega": 1.5
+    },
+    "resultado": "SUPERADA"
+  },
+  {
+    "id": "F6",
+    "escenario": "Consumidor caído con mensajes sin confirmar",
+    "esperado": "XAUTOCLAIM reasigna los mensajes tras 15 s de inactividad y se entregan las 10 notificaciones",
+    "observado": {
+      "mensajes_huerfanos": 10,
+      "notificaciones_entregadas": 10,
+      "segundos_hasta_entrega": 18.3,
+      "reclamados": 10
+    },
+    "resultado": "SUPERADA"
+  },
+  {
+    "id": "F7",
+    "escenario": "Caída del servicio de pedidos",
+    "esperado": "503 controlado con Retry-After; el catálogo sigue operando; recuperación automática",
+    "observado": {
+      "pedidos_durante_caida": {
+        "status": 503,
+        "ms": 305.8,
+        "retry_after": "5"
+      },
+      "catalogo_durante_caida": 200,
+      "pedidos_tras_recuperar": 200
+    },
+    "resultado": "SUPERADA"
+  }
+]

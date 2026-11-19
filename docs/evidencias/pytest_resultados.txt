@@ -1,0 +1,51 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
+rootdir: /home/claude/distrimarket/tests
+plugins: platformdirs-4.13.5, anyio-4.15.1, locust-2.47.0
+collecting ... collected 36 items
+
+test_concurrencia.py::test_sin_sobreventa_con_100_compras_simultaneas PASSED [  2%]
+test_concurrencia.py::test_misma_idempotency_key_concurrente_crea_un_solo_pedido PASSED [  5%]
+test_funcionales.py::test_registro_exitoso PASSED                        [  8%]
+test_funcionales.py::test_registro_correo_duplicado PASSED               [ 11%]
+test_funcionales.py::test_registro_contrasena_debil_rechazada PASSED     [ 13%]
+test_funcionales.py::test_registro_entrada_maliciosa_rechazada PASSED    [ 16%]
+test_funcionales.py::test_login_credenciales_invalidas PASSED            [ 19%]
+test_funcionales.py::test_login_devuelve_jwt_valido PASSED               [ 22%]
+test_funcionales.py::test_listar_productos_publico PASSED                [ 25%]
+test_funcionales.py::test_producto_inexistente PASSED                    [ 27%]
+test_funcionales.py::test_admin_crea_producto PASSED                     [ 30%]
+test_funcionales.py::test_cliente_no_puede_crear_producto PASSED         [ 33%]
+test_funcionales.py::test_crear_producto_sin_token PASSED                [ 36%]
+test_funcionales.py::test_crear_pedido_descuenta_stock_y_calcula_total PASSED [ 38%]
+test_funcionales.py::test_pedido_items_repetidos_se_agrupan PASSED       [ 41%]
+test_funcionales.py::test_pedido_stock_insuficiente_es_atomico PASSED    [ 44%]
+test_funcionales.py::test_pedido_producto_inexistente PASSED             [ 47%]
+test_funcionales.py::test_pedido_cantidad_invalida PASSED                [ 50%]
+test_funcionales.py::test_listar_mis_pedidos PASSED                      [ 52%]
+test_funcionales.py::test_no_puede_ver_pedido_ajeno PASSED               [ 55%]
+test_funcionales.py::test_cancelar_pedido_libera_stock PASSED            [ 58%]
+test_funcionales.py::test_idempotency_key_evita_pedido_duplicado PASSED  [ 61%]
+test_funcionales.py::test_pedidos_sin_token PASSED                       [ 63%]
+test_funcionales.py::test_token_alterado_rechazado PASSED                [ 66%]
+test_funcionales.py::test_token_alg_none_rechazado PASSED                [ 69%]
+test_funcionales.py::test_token_expirado_rechazado PASSED                [ 72%]
+test_funcionales.py::test_cabeceras_de_seguridad PASSED                  [ 75%]
+test_funcionales.py::test_cuerpo_demasiado_grande PASSED                 [ 77%]
+test_integracion.py::test_gateway_balancea_entre_replicas_de_inventario PASSED [ 80%]
+test_integracion.py::test_gateway_propaga_request_id PASSED              [ 83%]
+test_integracion.py::test_flujo_completo_pedido_evento_notificacion PASSED [ 86%]
+test_integracion.py::test_evento_publicado_en_stream PASSED              [ 88%]
+test_integracion.py::test_endpoint_interno_rechaza_llamadas_sin_token_de_servicio PASSED [ 91%]
+test_integracion.py::test_endpoints_internos_no_expuestos_por_gateway PASSED [ 94%]
+test_integracion.py::test_panel_de_estado_agrega_salud PASSED            [ 97%]
+test_integracion.py::test_rate_limiting_login_por_ip PASSED              [100%]
+
+=============================== warnings summary ===============================
+test_funcionales.py::test_token_alterado_rechazado
+  /usr/local/lib/python3.13/site-packages/jwt/api_jwt.py:149: InsecureKeyLengthWarning: The HMAC key is 11 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/claude/distrimarket/docs/evidencias/pytest_junit.xml -
+======================== 36 passed, 1 warning in 5.77s =========================

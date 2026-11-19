@@ -1,0 +1,9 @@
+{
+  "prueba": "100 pedidos simultáneos, stock inicial 25",
+  "exitosos_201": 25,
+  "rechazados_409": 75,
+  "otros": 0,
+  "stock_final": 0,
+  "duracion_s": 0.918,
+  "sobreventa": false
+}

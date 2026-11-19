@@ -1,0 +1,9 @@
+{
+  "prueba": "20 peticiones simultáneas con la misma Idempotency-Key",
+  "codigos": [
+    201
+  ],
+  "pedidos_distintos": 1,
+  "stock_inicial": 10,
+  "stock_final": 9
+}

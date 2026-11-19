@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DistriMarket · Pedidos distribuidos</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">◆</span> DistriMarket <small>plataforma distribuida de pedidos</small></div>
+  <div id="session"></div>
+</header>
+<main>
+  <section id="auth-view" class="card narrow">
+    <h2>Ingresar</h2>
+    <form id="login-form">
+      <label>Correo <input name="email" type="email" required value="cliente@correo.co"></label>
+      <label>Contraseña <input name="password" type="password" required value="Cliente2026"></label>
+      <button type="submit">Ingresar</button>
+    </form>
+    <details><summary>Crear cuenta</summary>
+      <form id="register-form">
+        <label>Nombre <input name="full_name" required minlength="3"></label>
+        <label>Correo <input name="email" type="email" required></label>
+        <label>Contraseña <input name="password" type="password" required minlength="8"></label>
+        <button type="submit">Registrarme</button>
+      </form>
+    </details>
+    <p id="auth-msg" class="msg"></p>
+  </section>
+
+  <section id="app-view" hidden>
+    <div class="grid">
+      <div class="card wide">
+        <h2>Catálogo <small id="served-by"></small></h2>
+        <table id="products"><thead><tr><th>Producto</th><th>Precio</th><th>Stock</th><th>Cant.</th></tr></thead><tbody></tbody></table>
+        <div class="row"><strong>Total: <span id="cart-total">$0</span></strong>
+          <button id="order-btn">Confirmar pedido</button></div>
+        <p id="order-msg" class="msg"></p>
+      </div>
+      <div class="card">
+        <h2>Mis pedidos</h2><ul id="orders" class="list"></ul>
+        <h2>Notificaciones <small>(asíncronas vía eventos)</small></h2><ul id="notifications" class="list"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Estado del sistema distribuido <button id="refresh-status" class="ghost">actualizar</button></h2>
+    <div id="status"></div>
+  </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
